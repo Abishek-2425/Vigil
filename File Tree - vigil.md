@@ -1,9 +1,9 @@
 # 📁 File Tree: vigil
 
 📍 Root: d:\PROJECTS\vigil  
-🕒 Generated: 5/27/2026, 10:31:44 AM  
+🕒 Generated: 5/29/2026, 10:32:18 AM  
 
-📊 Folders: 11 | Files: 32
+📊 Folders: 11 | Files: 34
 
 ---
 
@@ -18,7 +18,7 @@ vigil/
 │   ├── dashboard/
 │   │   └── page.tsx
 │   ├── login/
-│   │   └── login.tsx
+│   │   └── page.tsx
 │   ├── favicon.ico
 │   ├── globals.css
 │   ├── layout.tsx
@@ -43,6 +43,8 @@ vigil/
 ├── .gitignore
 ├── components.json
 ├── eslint.config.mjs
+├── File Tree - vigil.md
+├── linkedin_post_png.png
 ├── next-env.d.ts
 ├── next.config.ts
 ├── package-lock.json
