@@ -16,6 +16,8 @@ export async function GET(req: Request) {
   if (error) return new Response('DB error', { status: 500 })
   if (!monitors?.length) return new Response('No monitors', { status: 200 })
 
+  const emailCache = new Map<string, string>()
+
   for (const monitor of monitors) {
     const result = await ping(monitor.url)
 
@@ -35,9 +37,13 @@ export async function GET(req: Request) {
 
     const previousCheck = prevChecks?.[1]
 
-    // Get user email
-    const { data: userData } = await adminSupabase.auth.admin.getUserById(monitor.user_id)
-    const userEmail = userData?.user?.email
+    // Get user email (optimized with caching)
+    let userEmail = emailCache.get(monitor.user_id)
+    if (userEmail === undefined) {
+      const { data: userData } = await adminSupabase.auth.admin.getUserById(monitor.user_id)
+      userEmail = userData?.user?.email || ''
+      emailCache.set(monitor.user_id, userEmail)
+    }
 
     if (!userEmail) continue
 
@@ -47,7 +53,6 @@ export async function GET(req: Request) {
         monitor_id: monitor.id,
       })
       await sendDownAlert(userEmail, monitor.name || monitor.url, monitor.url)
-      console.log(`[INCIDENT] ${monitor.url} is DOWN`)
     }
 
     // Was down, now up → resolve incident + send recovery
@@ -58,10 +63,7 @@ export async function GET(req: Request) {
         .eq('monitor_id', monitor.id)
         .eq('is_resolved', false)
       await sendRecoveryAlert(userEmail, monitor.name || monitor.url, monitor.url)
-      console.log(`[RECOVERY] ${monitor.url} is back UP`)
     }
-
-    console.log(`[${monitor.url}] → ${result.is_up ? 'UP' : 'DOWN'} (${result.response_time_ms}ms)`)
   }
 
   return new Response('OK', { status: 200 })

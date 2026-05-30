@@ -22,16 +22,27 @@ export async function POST(req: Request) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   // Free tier limit
-  const { count } = await supabase
+  const { count, error: countError } = await supabase
     .from('monitors')
     .select('*', { count: 'exact', head: true })
     .eq('user_id', user.id)
 
-  if (count && count >= 3) {
+  if (countError) return NextResponse.json({ error: countError.message }, { status: 500 })
+
+  if (count !== null && count >= 3) {
     return NextResponse.json({ error: 'Free tier limit reached (3 monitors)' }, { status: 403 })
   }
 
-  const { url, name } = await req.json()
+  let url: string
+  let name: string
+  try {
+    const body = await req.json()
+    url = body.url
+    name = body.name
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
+  }
+
   if (!url) return NextResponse.json({ error: 'URL is required' }, { status: 400 })
 
   const { data, error } = await supabase
@@ -49,7 +60,15 @@ export async function DELETE(req: Request) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { id } = await req.json()
+  let id: string
+  try {
+    const body = await req.json()
+    id = body.id
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
+  }
+
+  if (!id) return NextResponse.json({ error: 'ID is required' }, { status: 400 })
 
   const { error } = await supabase
     .from('monitors')

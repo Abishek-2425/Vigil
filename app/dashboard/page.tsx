@@ -20,13 +20,13 @@ type Monitor = {
   checks: Check[]
 }
 
-function getUptimePercent(checks: Check[]) {
+export function getUptimePercent(checks: Check[]) {
   if (!checks.length) return null
   const up = checks.filter(c => c.is_up).length
   return ((up / checks.length) * 100).toFixed(1)
 }
 
-function getLastChecked(checks: Check[]) {
+export function getLastChecked(checks: Check[]) {
   if (!checks.length) return 'Never'
   const latest = [...checks].sort((a, b) =>
     new Date(b.checked_at).getTime() - new Date(a.checked_at).getTime()
@@ -34,14 +34,14 @@ function getLastChecked(checks: Check[]) {
   return new Date(latest.checked_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-function getStatus(checks: Check[]) {
+export function getStatus(checks: Check[]) {
   if (!checks.length) return null
   return [...checks].sort((a, b) =>
     new Date(b.checked_at).getTime() - new Date(a.checked_at).getTime()
   )[0].is_up
 }
 
-function getAvgResponse(checks: Check[]) {
+export function getAvgResponse(checks: Check[]) {
   if (!checks.length) return null
   const up = checks.filter(c => c.is_up && c.response_time_ms)
   if (!up.length) return null
