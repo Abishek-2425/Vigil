@@ -60,34 +60,62 @@ export default function DashboardPage() {
   const supabase = createClient()
 
   async function fetchMonitors() {
-    const res = await fetch('/api/monitors')
-    const data = await res.json()
-    setMonitors(Array.isArray(data) ? data : [])
-    setLoading(false)
+    try {
+      const res = await fetch('/api/monitors')
+      const data = await res.json()
+      setMonitors(Array.isArray(data) ? data : [])
+    } catch (err) {
+      console.error('Failed to fetch monitors:', err)
+      setError('Failed to load monitors. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   async function handleAdd() {
     if (!url) return
     setAdding(true)
     setError('')
-    const res = await fetch('/api/monitors', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url, name }),
-    })
-    const data = await res.json()
-    if (data.error) setError(data.error)
-    else { setUrl(''); setName(''); setShowForm(false); fetchMonitors() }
-    setAdding(false)
+    try {
+      const res = await fetch('/api/monitors', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, name }),
+      })
+      const data = await res.json()
+      if (data.error) {
+        setError(data.error)
+      } else {
+        setUrl('')
+        setName('')
+        setShowForm(false)
+        fetchMonitors()
+      }
+    } catch (err) {
+      console.error('Failed to add monitor:', err)
+      setError('Failed to add monitor. Please check your connection and try again.')
+    } finally {
+      setAdding(false)
+    }
   }
 
   async function handleDelete(id: string) {
-    await fetch('/api/monitors', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id }),
-    })
-    fetchMonitors()
+    try {
+      const res = await fetch('/api/monitors', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      })
+      const data = await res.json()
+      if (data.error) {
+        setError(data.error)
+      } else {
+        fetchMonitors()
+      }
+    } catch (err) {
+      console.error('Failed to delete monitor:', err)
+      setError('Failed to delete monitor. Please try again.')
+    }
   }
 
   async function handleSignOut() {
@@ -98,11 +126,21 @@ export default function DashboardPage() {
   useEffect(() => {
     let ignore = false
     async function load() {
-      const res = await fetch('/api/monitors')
-      const data = await res.json()
-      if (!ignore) {
-        setMonitors(Array.isArray(data) ? data : [])
-        setLoading(false)
+      try {
+        const res = await fetch('/api/monitors')
+        const data = await res.json()
+        if (!ignore) {
+          setMonitors(Array.isArray(data) ? data : [])
+        }
+      } catch (err) {
+        console.error('Failed to load monitors:', err)
+        if (!ignore) {
+          setError('Failed to load monitors. Please try again.')
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false)
+        }
       }
     }
     load()

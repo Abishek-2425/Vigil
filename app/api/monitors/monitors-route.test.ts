@@ -25,6 +25,7 @@ describe('Monitors API Route', () => {
       insert: vi.fn().mockReturnThis(),
       single: vi.fn().mockReturnThis(),
       delete: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockReturnThis(),
       then: vi.fn().mockImplementation((resolve) => resolve({ data: null, error: null, count: null })),
     }
 

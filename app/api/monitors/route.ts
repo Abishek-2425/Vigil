@@ -11,6 +11,8 @@ export async function GET() {
     .select('*, checks(is_up, checked_at, response_time_ms)')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
+    .order('checked_at', { referencedTable: 'checks', ascending: false })
+    .limit(100, { foreignTable: 'checks' })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data)
