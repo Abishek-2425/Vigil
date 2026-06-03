@@ -1,33 +1,31 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import type { Metadata } from 'next'
+import './globals.css'
 
 export const metadata: Metadata = {
-  title: "Vigil",
-  description: "Site Uptime Monitor",
-};
+  title: 'Vigil — Uptime Monitoring for Developers',
+  description: 'Free, open-source uptime monitoring. Pings your URLs every 5 minutes and emails you the moment something goes down.',
+  openGraph: {
+    title: 'Vigil — Uptime Monitoring for Developers',
+    description: 'Free, open-source uptime monitoring. Pings your URLs every 5 minutes and emails you the moment something goes down.',
+    url: 'https://vigil-mocha.vercel.app',
+    siteName: 'Vigil',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Vigil — Uptime Monitoring for Developers',
+    description: 'Free, open-source uptime monitoring. Pings your URLs every 5 minutes and emails you the moment something goes down.',
+  },
+}
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en">
+      <body>{children}</body>
     </html>
-  );
+  )
 }
